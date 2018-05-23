@@ -1,0 +1,23 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Is Kubernetes cluster protected with RBAC?
+##
+rbac: true
+
+## Image name
+##
+imageName: digillect/registry-cleaner
+
+## Global default for image tag, allows to set tags for all custom components at once,
+## defaults to latest
+##
+# imageTag:
+
+## Schedule, defaults to 2am every day
+##
+# schedule: "0 2 * * *"
+
+## Log level, defaults to "info"
+##
+# logLevel: debug

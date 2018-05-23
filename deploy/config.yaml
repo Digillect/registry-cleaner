@@ -1,0 +1,12 @@
+registries:
+  registry.example.org:
+    url: https://registry.example.org
+    username: jdoe
+    password: secret
+    ignore:
+      - ignored-project/.+
+      - project/ignored-project-image
+scanners:
+  - kind: kubernetes
+    ignore:
+      - ReplicaSet

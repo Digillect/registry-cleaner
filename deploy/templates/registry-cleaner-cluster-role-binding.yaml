@@ -1,0 +1,15 @@
+{{- if .Values.rbac }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: registry-cleaner
+  {{- template "standard-labels" . }}
+subjects:
+  - kind: ServiceAccount
+    name: registry-cleaner
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: registry-cleaner
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

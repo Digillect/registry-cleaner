@@ -1,0 +1,42 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: registry-cleaner
+  {{- template "standard-labels" . }}
+spec:
+  schedule: {{ .Values.schedule | default "0 2 * * *" | quote }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: registry-cleaner
+          labels:
+            job: registry-cleaner
+        spec:
+          restartPolicy: OnFailure
+          {{- if .Values.rbac }}
+          serviceAccountName: registry-cleaner
+          {{- end }}
+          containers:
+            - name: registry-cleaner
+              image: {{ .Values.imageName }}:{{ .Values.imageTag | default "latest" }}
+              env:
+                - name: LOG_LEVEL
+                  value: {{ .Values.logLevel | default "info" | quote }}
+                - name: CONFIG_FILE
+                  value: /etc/registry-cleaner/config.yaml
+              envFrom:
+                - secretRef:
+                    name: registry-cleaner
+              volumeMounts:
+                - name: config
+                  mountPath: /etc/registry-cleaner
+          volumes:
+            - name: config
+              configMap:
+                name: registry-cleaner
+                items:
+                  - key: config
+                    path: config.yaml
