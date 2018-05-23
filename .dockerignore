@@ -1,0 +1,9 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore IDEA files
+/.idea
+
+# Ignore deployment configuration
+Dockerfile
+docker-compose.yml

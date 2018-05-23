@@ -1,0 +1,6 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore IDEA files
+/.idea
+/tmp
