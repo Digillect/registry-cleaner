@@ -5,10 +5,10 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem 'docker-api'
 gem 'kubeclient'
 gem 'rest-client'
 
 gem 'activesupport'
 gem 'awesome_print'
-#gem 'hashie'
 gem 'semantic_logger'
