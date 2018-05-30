@@ -15,5 +15,6 @@ gem 'semantic_logger'
 
 group :test do
   gem 'minitest'
+  gem 'minitest-stub-const'
   gem 'rake'
 end

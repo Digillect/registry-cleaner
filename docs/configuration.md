@@ -17,7 +17,7 @@ registries:
     url: http://registry.example.org
     repository: docker-hosted
     username: jdoe
-    passwordFrom: REGISTRY_PASSWORD
+    password: ${REGISTRY_PASSWORD}
     ignore:
       - ignored-project/.+
       - project/ignored-project-image
@@ -28,6 +28,10 @@ scanners:
  ```
 
 ## Registries
+
+Values in the registry configuration section can be specified as is or through the reference to the environment variable,
+in this case `${VARIABLE}` notation should be used to reference value of the environment variable
+with the name `VARIABLE`. 
 
 ### All kind of registries
 
@@ -45,35 +49,19 @@ images of the registry.
 
 #### url
 
-URL of the Nexus API endpoint.
-
-#### urlFrom
-
-Name of the environment variable to get an actual url from.
+URL of the Docker registry.
 
 #### username
 
-Username to authenticate to the Nexus server.
+Username to authenticate with the registry.
 
 #### password
 
-Password to authenticate to the Nexus server.
-
-#### usernameFrom
-
-Name of the environment variable to get an actual username from.
-
-#### passwordFrom
-
-Name of the environment variable to get an actual password from.
+Password to authenticate with the registry.
 
 ### Nexus registries
 
 #### url
-
-#### urlFrom
-
-Name of the environment variable to get an actual url from.
 
 URL of the Nexus API endpoint.
 
@@ -81,10 +69,6 @@ URL of the Nexus API endpoint.
 
 Name of the Nexus repository that holds images of the registry.
 
-#### repositoryFrom
-
-Name of the environment variable to get an actual repository name from.
-
 #### username
 
 Username to authenticate to the Nexus server.
@@ -92,14 +76,6 @@ Username to authenticate to the Nexus server.
 #### password
 
 Password to authenticate to the Nexus server.
-
-#### usernameFrom
-
-Name of the environment variable to get an actual username from.
-
-#### passwordFrom
-
-Name of the environment variable to get an actual password from.
 
 ## Scanners
 

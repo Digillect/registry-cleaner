@@ -9,3 +9,4 @@ require 'active_support/dependencies'
 ActiveSupport::Dependencies.autoload_paths += %w[src]
 
 require 'minitest/autorun'
+require 'minitest/stub_const'
