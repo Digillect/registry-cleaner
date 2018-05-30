@@ -12,7 +12,7 @@ class DockerRegistry < Registry
     @logger = SemanticLogger[DockerRegistry]
   end
 
-  def load_images
+  def load_images(namespaces)
     images = []
 
     repositories.each do |repository|
@@ -64,6 +64,10 @@ class DockerRegistry < Registry
     end
 
     tags
+  rescue RestClient::Unauthorized
+    @logger.error("Unable to get list of tags for repository #{hostname}#{repository}")
+
+    []
   end
 
   def tag_digest(repository, tag)

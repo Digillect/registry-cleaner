@@ -7,11 +7,11 @@ class ImagesCleaner
   end
 
   def clean
-    @collected_images.each do |registry_id, repositories|
+    @collected_images.each do |registry_id, namespaces|
       registry = @configuration.find_registry_by_id(registry_id)
 
       begin
-        clean_registry(registry, repositories)
+        clean_registry(registry, namespaces)
       rescue StandardError => err
         @logger.error("Unable to clean registry #{registry_id}: #{err}")
 
@@ -24,20 +24,19 @@ class ImagesCleaner
 
   private
 
-  def clean_registry(registry, repositories)
+  def clean_registry(registry, namespaces)
     @logger.info("Cleaning registry #{registry.id}")
 
-    name_prefixes = image_name_prefixes(repositories)
     images_deleted = 0
 
-    images = registry.load_images
+    images = registry.load_images(namespaces.keys)
 
     return unless images
 
-    images = images.sort_by { |image| [image.name, image.tag] }
+    images = images.sort_by { |image| [image.namespaced_name, image.tag] }
 
     images.each do |image|
-      next if should_keep_image?(repositories, name_prefixes, image)
+      next if should_keep_image?(namespaces, image)
 
       images_deleted += delete_image(image)
     end
@@ -47,38 +46,32 @@ class ImagesCleaner
 
   def delete_image(image)
     if @dry_run
-      @logger.info("Pretending to delete image #{image.name}:#{image.tag}")
+      @logger.info("Pretending to delete image #{image.namespaced_name_with_tag}")
 
       return 0
     end
 
-    @logger.info("Deleting #{image.name}:#{image.tag}")
+    @logger.info("Deleting #{image.namespaced_name_with_tag}")
 
     begin
       registry.delete_image(image) unless @dry_run
 
       1
     rescue StandardError => err
-      @logger.error("Unable to delete image #{image.name}:#{image.tag} - #{err}")
+      @logger.error("Unable to delete image #{image.namespaced_name_with_tag} - #{err}")
     end
 
     0
   end
 
-  def image_name_prefixes(repositories)
-    repositories
-      .keys
-      .map { |name| name.split('/').first }
-      .uniq
-  end
+  def should_keep_image?(namespaces, image)
+    return true if image.namespace.nil?
+    return true unless namespaces.key?(image.namespace)
 
-  def should_keep_image?(repositories, name_prefixes, image)
-    prefix, suffix = image.name.split('/')
+    namespace = namespaces[image.namespace]
 
-    return true if suffix.nil?
-    return true unless name_prefixes.include?(prefix)
-    return false unless repositories.key?(image.name)
+    return false unless namespace.key?(image.name)
 
-    repositories[image.name].include?(image.tag)
+    namespace[image.name].include?(image.tag)
   end
 end

@@ -21,7 +21,7 @@ class DockerRegistryAuthenticator
 
     return unless realm
 
-    @logger.debug("Performing authentication with #{realm}")
+    @logger.debug("Performing authentication with #{realm}, scope #{scope}")
 
     url = authentication_url(realm, service, scope)
 

@@ -96,7 +96,7 @@ class KubernetesScanner
         containers = path.reduce(resource) { |node, path_part| node[path_part] }
 
         containers&.each do |container|
-          yield container[:image] if block_given?
+          yield Image.new(container[:image]) if block_given?
         end
       end
     end
@@ -110,12 +110,12 @@ class KubernetesScanner
 
     config_maps&.each do |config_map|
       config_map[:data].to_h.each_value do |images|
-        images.split.each do |image|
-          next if image.blank?
+        images.split.each do |image_name|
+          next if image_name.blank?
 
           count += 1
 
-          yield image if block_given?
+          yield Image.new(image_name) if block_given?
         end
       end
     end

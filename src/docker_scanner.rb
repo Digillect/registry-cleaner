@@ -13,7 +13,7 @@ class DockerScanner
     containers.each do |container|
       @logger.debug("Container: #{container.id}: #{container.info['Image']}")
 
-      yield container.info['Image'] if block_given?
+      yield Image.new(container.info['Image']) if block_given?
     end
   end
 

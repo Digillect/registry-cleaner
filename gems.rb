@@ -12,3 +12,8 @@ gem 'rest-client'
 gem 'activesupport'
 gem 'awesome_print'
 gem 'semantic_logger'
+
+group :test do
+  gem 'minitest'
+  gem 'rake'
+end
