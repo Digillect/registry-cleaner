@@ -38,13 +38,13 @@ class ImagesCleaner
     images.each do |image|
       next if should_keep_image?(namespaces, image)
 
-      images_deleted += delete_image(image)
+      images_deleted += delete_image(registry, image)
     end
 
     @logger.info("Deleted #{images_deleted} " + 'image'.pluralize(images_deleted))
   end
 
-  def delete_image(image)
+  def delete_image(registry, image)
     if @dry_run
       @logger.info("Pretending to delete image #{image.namespaced_name_with_tag}")
 
@@ -54,7 +54,7 @@ class ImagesCleaner
     @logger.info("Deleting #{image.namespaced_name_with_tag}")
 
     begin
-      registry.delete_image(image) unless @dry_run
+      registry.delete_image(image)
 
       1
     rescue StandardError => err
