@@ -56,7 +56,7 @@ class ImagesCleaner
     begin
       registry.delete_image(image)
 
-      1
+      return 1
     rescue StandardError => err
       @logger.error("Unable to delete image #{image.namespaced_name_with_tag} - #{err}")
     end
