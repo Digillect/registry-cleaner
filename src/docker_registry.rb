@@ -35,9 +35,9 @@ class DockerRegistry < Registry
   end
 
   def delete_image(image)
-    digest = tag_digest(image.name, image.tag)
+    digest = tag_digest(image.namespaced_name, image.tag)
 
-    @client.execute("#{@url}/v2/#{image.name}/manifests/#{digest}", :delete)
+    @client.execute("#{@url}/v2/#{image.namespaced_name}/manifests/#{digest}", :delete)
   end
 
   private
