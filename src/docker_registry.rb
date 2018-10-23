@@ -32,6 +32,8 @@ class DockerRegistry < Registry
     end
 
     images
+  rescue StandardError => err
+    @logger.error("Unable to load images: #{err}")
   end
 
   def delete_image(image)
@@ -48,7 +50,7 @@ class DockerRegistry < Registry
     repositories = []
 
     @client.paged_get("#{@url}/v2/_catalog") do |json|
-      repositories.concat(json[:repositories])
+      repositories.concat(json[:repositories]) if json[:repositories]
     end
 
     repositories
@@ -60,7 +62,7 @@ class DockerRegistry < Registry
     tags = []
 
     @client.paged_get("#{@url}/v2/#{repository}/tags/list") do |json|
-      tags.concat(json[:tags])
+      tags.concat(json[:tags]) if json[:tags]
     end
 
     tags
