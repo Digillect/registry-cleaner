@@ -6,8 +6,9 @@ class DockerRegistry < Registry
 
     username = config_value(config, 'username')
     password = config_value(config, 'password')
+    widen_scope = config['widen_scope']
 
-    @client = DockerRegistryClient.new(username, password)
+    @client = DockerRegistryClient.new(username, password, widen_scope)
 
     @logger = SemanticLogger[DockerRegistry]
   end

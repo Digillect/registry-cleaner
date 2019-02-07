@@ -1,6 +1,6 @@
 class DockerRegistryClient
-  def initialize(username, password)
-    @authenticator = DockerRegistryAuthenticator.new(username, password)
+  def initialize(username, password, widen_scope)
+    @authenticator = DockerRegistryAuthenticator.new(username, password, widen_scope)
 
     @logger = SemanticLogger[DockerRegistryClient]
   end

@@ -1,7 +1,10 @@
 class DockerRegistryAuthenticator
-  def initialize(username, password)
+  def initialize(username, password, widen_scope)
     @username = username
     @password = password
+    @widen_scope = widen_scope
+
+    @tokens = {}
 
     @token = nil
 
@@ -21,6 +24,14 @@ class DockerRegistryAuthenticator
 
     return unless realm
 
+    scope = scope.gsub(/:[a-zA-z,]+$/, ':*') unless scope.end_with?(':*') || !@widen_scope
+
+    if @tokens.key?(scope)
+      @token = @tokens[scope]
+
+      return @token
+    end
+
     @logger.debug("Performing authentication with #{realm}, scope #{scope}")
 
     url = authentication_url(realm, service, scope)
@@ -34,6 +45,8 @@ class DockerRegistryAuthenticator
     rescue StandardError => err
       raise "Unable to authenticate at #{realm}: #{err}"
     end
+
+    @tokens[scope] = @token
 
     @token
   end
