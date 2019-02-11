@@ -17,6 +17,8 @@ class DockerRegistry < Registry
     images = []
 
     repositories.each do |repository|
+      next unless namespaces.any? { |ns| repository.start_with?(ns) }
+
       @logger.debug("Processing repository #{repository}")
 
       tags(repository).each do |tag|
