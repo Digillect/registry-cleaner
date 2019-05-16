@@ -73,7 +73,7 @@ class DockerRegistryAuthenticator
     end
 
     service = extract(SERVICE_REGEXP, www_authenticate)
-    scope = extract(SCOPE_REGEXP, www_authenticate)
+    scope = extract(SCOPE_REGEXP, www_authenticate) || ':*'
 
     [realm, service, scope]
   end
