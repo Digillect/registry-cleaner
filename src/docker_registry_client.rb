@@ -13,7 +13,13 @@ class DockerRegistryClient
     url = first_page_url(url)
 
     until url.nil?
-      response = execute(url, :get, headers)
+      uri = URI.parse(url)
+
+      scheme_and_host = "#{uri.scheme}://#{uri.host}" if scheme_and_host.nil?
+
+      uri = URI.join(scheme_and_host, url) unless uri.absolute?
+
+      response = execute(uri.to_s, :get, headers)
 
       json = JSON.parse(response.body, symbolize_names: true)
 
