@@ -13,13 +13,16 @@ class NexusRegistry < Registry
     @logger = SemanticLogger[NexusRegistry]
   end
 
-  def load_images
+  def load_images(namespaces)
     images = []
 
     @logger.debug("Loading components from repository #{@repository}")
 
     @nexus_client.components(@repository) do |item|
       name = item[:name]
+
+      next unless namespaces.any? { |ns| name.start_with?(ns) }
+
       tag = item[:version] || 'latest'
       assets = item[:assets]&.map { |asset| asset[:id] }
 

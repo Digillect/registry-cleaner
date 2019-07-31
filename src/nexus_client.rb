@@ -1,6 +1,14 @@
 class NexusClient
   def initialize(uri, login, password)
-    @resource = RestClient::Resource.new("#{uri}/service/rest/beta", login, password)
+    @conn = Faraday.new("#{uri}/service/rest/v1") do |conn|
+      conn.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
+      conn.response(:raise_error)
+
+      conn.basic_auth(login, password)
+
+      conn.adapter(Faraday.default_adapter)
+    end
+
     @logger = SemanticLogger[NexusClient]
   end
 
@@ -15,8 +23,9 @@ class NexusClient
       }
 
       params[:continuationToken] = continuation_token if continuation_token
-      response = @resource['components'].get(params: params, accept: :json)
-      json = JSON.parse(response.body, symbolize_names: true)
+
+      response = @conn.get('components', params)
+      json = response.body
 
       json[:items].each do |item|
         yield item if block_given?
@@ -30,11 +39,13 @@ class NexusClient
 
   def delete_component(id)
     @logger.debug("Deleting component #{id}")
-    @resource["components/#{id}"].delete
+
+    @conn.delete("components/#{id}")
   end
 
   def delete_asset(id)
     @logger.debug("Deleting asset #{id}")
-    @resource["assets/#{id}"].delete
+
+    @conn.delete("assets/#{id}")
   end
 end

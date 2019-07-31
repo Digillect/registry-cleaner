@@ -12,8 +12,8 @@ class ImagesCleaner
 
       begin
         clean_registry(registry, namespaces)
-      rescue StandardError => err
-        @logger.error("Unable to clean registry #{registry_id}: #{err}")
+      rescue StandardError => e
+        @logger.error("Unable to clean registry #{registry_id}: #{e}")
 
         return false
       end
@@ -57,8 +57,8 @@ class ImagesCleaner
       registry.delete_image(image)
 
       return 1
-    rescue StandardError => err
-      @logger.error("Unable to delete image #{image.namespaced_name_with_tag} - #{err}")
+    rescue StandardError => e
+      @logger.error("Unable to delete image #{image.namespaced_name_with_tag} - #{e}")
     end
 
     0

@@ -20,6 +20,8 @@ class DockerRegistryAuthenticator
   def authenticate(www_authenticate)
     @token = nil
 
+    @logger.debug("WWW Authenticate: #{www_authenticate}")
+
     realm, service, scope = parse_authentication_header(www_authenticate)
 
     return unless realm
@@ -37,9 +39,18 @@ class DockerRegistryAuthenticator
     url = authentication_url(realm, service, scope)
 
     begin
-      response = RestClient::Request.execute(method: :get, url: url, user: @username, password: @password)
+      conn = Faraday.new(url) do |c|
+        c.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
 
-      json = JSON.parse(response.body, symbolize_names: true)
+        c.basic_auth(@username, @password)
+
+        c.adapter(Faraday.default_adapter)
+      end
+
+      #response = RestClient::Request.execute(method: :get, url: url, user: @username, password: @password)
+      response = conn.get
+
+      # json = JSON.parse(response.body, symbolize_names: true)
 
       @token = json[:token]
     rescue StandardError => err
@@ -53,9 +64,9 @@ class DockerRegistryAuthenticator
 
   private
 
-  REALM_REGEXP = /realm="([^"]+)"/
-  SERVICE_REGEXP = /service="([^"]+)"/
-  SCOPE_REGEXP = /scope="([^"]+)"/
+  REALM_REGEXP = /realm="([^"]+)"/.freeze
+  SERVICE_REGEXP = /service="([^"]+)"/.freeze
+  SCOPE_REGEXP = /scope="([^"]+)"/.freeze
 
   def parse_authentication_header(www_authenticate)
     if www_authenticate.blank?

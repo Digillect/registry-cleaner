@@ -6,12 +6,18 @@ git_source(:github) do |repo_name|
 end
 
 gem 'docker-api'
+gem 'faraday', github: 'lostisland/faraday'
+gem 'faraday_middleware', github: 'lostisland/faraday_middleware'
 gem 'kubeclient'
 gem 'rest-client'
 
 gem 'activesupport'
 gem 'awesome_print'
 gem 'semantic_logger'
+
+group :development do
+  gem 'pry'
+end
 
 group :test do
   gem 'minitest'

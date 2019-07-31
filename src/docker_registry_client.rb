@@ -1,3 +1,5 @@
+require 'pry'
+
 class DockerRegistryClient
   def initialize(username, password, widen_scope)
     @authenticator = DockerRegistryAuthenticator.new(username, password, widen_scope)
@@ -20,8 +22,7 @@ class DockerRegistryClient
       uri = URI.join(scheme_and_host, url) unless uri.absolute?
 
       response = execute(uri.to_s, :get, headers)
-
-      json = JSON.parse(response.body, symbolize_names: true)
+      json = response.body
 
       yield(json) if block_given?
 
@@ -32,22 +33,34 @@ class DockerRegistryClient
   def execute(url, method, payload = nil, headers = nil)
     headers = setup_headers(headers)
 
+    conn = Faraday.new(url) do |c|
+      c.response(:logger)
+      c.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
+      c.response(:raise_error)
+
+      c.basic_auth(@username, @password)
+
+      c.adapter(Faraday.default_adapter)
+    end
+
     begin
-      return RestClient::Request.execute(method: method, url: url, payload: payload, headers: headers)
-    rescue RestClient::Unauthorized => err
-      www_authenticate = err.http_headers[:www_authenticate]
+      response = conn.run_request(method.to_sym, nil, payload, headers)
+
+      return response
+    rescue Faraday::UnauthorizedError => e
+      www_authenticate = e.response[:headers]['www-authenticate']
     end
 
     return unless @authenticator.authenticate(www_authenticate)
 
     headers = setup_headers(headers)
 
-    RestClient::Request.execute(method: method, url: url, payload: payload, headers: headers)
+    conn.run_request(method.to_sym, nil, payload, headers)
   end
 
   private
 
-  LINK_REGEXP = /^<(.+)>;\s*rel="next"$/
+  LINK_REGEXP = /^<(.+)>;\s*rel="next"$/.freeze
   PAGE_SIZE = 50
 
   def first_page_url(url)
