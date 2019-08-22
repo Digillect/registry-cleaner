@@ -47,14 +47,11 @@ class DockerRegistryAuthenticator
         c.adapter(Faraday.default_adapter)
       end
 
-      #response = RestClient::Request.execute(method: :get, url: url, user: @username, password: @password)
       response = conn.get
 
-      # json = JSON.parse(response.body, symbolize_names: true)
-
-      @token = json[:token]
-    rescue StandardError => err
-      raise "Unable to authenticate at #{realm}: #{err}"
+      @token = response.body[:token]
+    rescue StandardError => e
+      raise "Unable to authenticate at #{realm}: #{e}"
     end
 
     @tokens[scope] = @token
