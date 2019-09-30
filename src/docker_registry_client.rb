@@ -1,8 +1,16 @@
 require 'pry'
 
 class DockerRegistryClient
-  def initialize(username, password, widen_scope)
-    @authenticator = DockerRegistryAuthenticator.new(username, password, widen_scope)
+  def initialize(username, password, widen_scope, ssl_verify_peer)
+    @authenticator = DockerRegistryAuthenticator.new(username, password, widen_scope, ssl_verify_peer)
+
+    @options = {}
+
+    unless ssl_verify_peer.nil?
+      @options[:ssl] = {
+        verify: ssl_verify_peer
+      }
+    end
 
     @logger = SemanticLogger[DockerRegistryClient]
   end
@@ -33,7 +41,7 @@ class DockerRegistryClient
   def execute(url, method, payload = nil, headers = nil)
     headers = setup_headers(headers)
 
-    conn = Faraday.new(url) do |c|
+    conn = Faraday.new(url, @options) do |c|
       c.response(:logger)
       c.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
       c.response(:raise_error)

@@ -7,8 +7,9 @@ class DockerRegistry < Registry
     username = config_value(config, 'username')
     password = config_value(config, 'password')
     widen_scope = config['widen_scope']
+    ssl_verify_peer = config['ssl_verify_peer']
 
-    @client = DockerRegistryClient.new(username, password, widen_scope)
+    @client = DockerRegistryClient.new(username, password, widen_scope, ssl_verify_peer)
 
     @logger = SemanticLogger[DockerRegistry]
   end

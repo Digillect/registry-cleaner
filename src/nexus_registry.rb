@@ -6,8 +6,9 @@ class NexusRegistry < Registry
     url = config_value(config, 'url')
     username = config_value(config, 'username')
     password = config_value(config, 'password')
+    ssl_verify_peer = config_value(config, 'ssl_verify_peer')
 
-    @nexus_client = NexusClient.new(url, username, password)
+    @nexus_client = NexusClient.new(url, username, password, ssl_verify_peer)
     @repository = config_value(config, 'repository')
 
     @logger = SemanticLogger[NexusRegistry]

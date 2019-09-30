@@ -1,6 +1,14 @@
 class NexusClient
-  def initialize(uri, login, password)
-    @conn = Faraday.new("#{uri}/service/rest/v1") do |conn|
+  def initialize(uri, login, password, ssl_verify_peer)
+    options = {}
+
+    unless ssl_verify_peer.nil?
+      options[:ssl] = {
+        verify: ssl_verify_peer
+      }
+    end
+
+    @conn = Faraday.new("#{uri}/service/rest/v1", options) do |conn|
       conn.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
       conn.response(:raise_error)
 

@@ -16,7 +16,8 @@ class Registry
   def config_value(config, name, default = nil)
     value = config[name]
 
-    return default unless value
+    return default if value.nil?
+    return value unless value.is_a?(String)
 
     value.gsub(/\$\{[A-Za-z_][A-Za-z0-9_\.]*\}/) { |var| ENV.fetch(var[2..-2], '').rstrip }
   end

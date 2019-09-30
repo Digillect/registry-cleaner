@@ -1,8 +1,16 @@
 class DockerRegistryAuthenticator
-  def initialize(username, password, widen_scope)
+  def initialize(username, password, widen_scope, ssl_verify_peer)
     @username = username
     @password = password
     @widen_scope = widen_scope
+
+    @options = {}
+
+    unless ssl_verify_peer.nil?
+      @options[:ssl] = {
+        verify: ssl_verify_peer
+      }
+    end
 
     @tokens = {}
 
@@ -39,7 +47,7 @@ class DockerRegistryAuthenticator
     url = authentication_url(realm, service, scope)
 
     begin
-      conn = Faraday.new(url) do |c|
+      conn = Faraday.new(url, @options) do |c|
         c.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
 
         c.basic_auth(@username, @password)
