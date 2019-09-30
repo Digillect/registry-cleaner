@@ -51,6 +51,10 @@ images of the registry.
 
 URL of the Docker registry.
 
+#### ssl_verify_peer
+
+Boolean value (usually only `false` is used) that turns on or off SSL Peer certificate verification.
+
 #### username
 
 Username to authenticate with the registry.
