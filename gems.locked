@@ -30,7 +30,7 @@ GEM
       multi_json
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
-    excon (0.64.0)
+    excon (0.71.0)
     http (3.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
