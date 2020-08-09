@@ -70,7 +70,7 @@ class DockerRegistry < Registry
     end
 
     tags
-  rescue RestClient::Unauthorized, Faraday::ResourceNotFound
+  rescue RestClient::Unauthorized, Faraday::ResourceNotFound, Faraday::UnauthorizedError
     @logger.error("Unable to get list of tags for repository #{hostname}#{repository}")
 
     []
