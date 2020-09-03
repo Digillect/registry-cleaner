@@ -6,8 +6,8 @@ git_source(:github) do |repo_name|
 end
 
 gem 'docker-api'
-gem 'faraday', github: 'lostisland/faraday'
-gem 'faraday_middleware', github: 'lostisland/faraday_middleware'
+gem 'faraday', '~> 1.0.1' #, github: 'lostisland/faraday'
+gem 'faraday_middleware', '~> 1.0.0' #, github: 'lostisland/faraday_middleware'
 gem 'kubeclient'
 gem 'rest-client'
 

@@ -42,7 +42,7 @@ class DockerRegistryClient
     headers = setup_headers(headers)
 
     conn = Faraday.new(url, @options) do |c|
-      c.response(:logger)
+      c.response(:logger, @logger, { log_level: :debug })
       c.response(:json, content_type: /\bjson$/, parser_options: { symbolize_names: true })
       c.response(:raise_error)
 
